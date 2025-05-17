@@ -1,6 +1,6 @@
 package com.sandbox.iam;
 
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.IamException;
 import software.amazon.awssdk.services.iam.model.ListUsersRequest;
@@ -13,9 +13,9 @@ public class IamServiceImpl implements IamService {
 
     private final IamClient iam;
 
-    public IamServiceImpl() {
+    public IamServiceImpl(AwsCredentialsProvider credentialsProvider) {
         iam = IamClient.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
+                .credentialsProvider(credentialsProvider)
                 .build();
     }
 

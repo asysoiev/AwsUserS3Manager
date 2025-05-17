@@ -1,6 +1,6 @@
 package com.sandbox.s3;
 
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,9 +16,9 @@ public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3;
 
-    public S3ServiceImpl() {
+    public S3ServiceImpl(AwsCredentialsProvider credentialsProvider) {
         s3 = S3Client.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
+                .credentialsProvider(credentialsProvider)
                 .build();
     }
 
