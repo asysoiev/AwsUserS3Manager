@@ -19,3 +19,8 @@
    1. System.out.println 
    2. e.printStackTrace(); 
    3. fix SLF4J warning
+3. Upload some files to the S3 bucket.
+   Try using multipart upload API.
+4. Play with prefixes and keys in S3.
+   Get list of files by prefix, full key, etc.
+5. Delete all S3 bucket from ALL regions
