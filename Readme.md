@@ -26,3 +26,6 @@
 5. Delete all S3 bucket from ALL regions
 6. Configure S3 resource based access policies.
    User can do anything only in hist folder.
+7. Add validation of S3 bucket name
+   Must NOT start with the prefix xn--
+   Must NOT end with the suffix -s3alias
