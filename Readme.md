@@ -24,3 +24,5 @@
 4. Play with prefixes and keys in S3.
    Get list of files by prefix, full key, etc.
 5. Delete all S3 bucket from ALL regions
+6. Configure S3 resource based access policies.
+   User can do anything only in hist folder.
