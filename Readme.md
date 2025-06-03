@@ -29,3 +29,6 @@
 7. Add validation of S3 bucket name
    Must NOT start with the prefix xn--
    Must NOT end with the suffix -s3alias
+8. Create folder each group of user
+9. Create access points for group of
+   users https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-access-points.html
