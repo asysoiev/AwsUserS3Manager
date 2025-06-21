@@ -22,4 +22,5 @@ public interface S3Service extends AutoCloseable {
      */
     void createFolder(String bucketName, String folderName);
 
+    void deleteBucket(String bucketName);
 }

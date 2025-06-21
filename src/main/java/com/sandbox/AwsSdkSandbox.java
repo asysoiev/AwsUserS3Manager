@@ -1,6 +1,9 @@
 package com.sandbox;
 
+import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand;
+import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamCommand;
 import com.sandbox.commands.s3.CreateS3BucketCommand;
+import com.sandbox.commands.s3.DeleteS3BucketCommand;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -22,8 +25,11 @@ public class AwsSdkSandbox implements Runnable {
             System.out.println("No config.properties file found. Using defaults or command-line args.");
         }
 
-        CommandLine commandLine = new CommandLine(new AwsSdkSandbox());
-        commandLine.addSubcommand(new CreateS3BucketCommand(props));
+        CommandLine commandLine = new CommandLine(new AwsSdkSandbox())
+                .addSubcommand(new CreateS3BucketCommand(props))
+                .addSubcommand(new DeleteS3BucketCommand(props))
+                .addSubcommand(new PutRecordsToKinesisStreamCommand(props))
+                .addSubcommand(new SubscribeToKinesisStreamCommand(props));
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }

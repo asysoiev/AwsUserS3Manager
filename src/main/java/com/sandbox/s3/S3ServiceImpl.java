@@ -7,8 +7,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
 import software.amazon.awssdk.services.s3.model.CreateBucketConfiguration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.util.UUID;
 
@@ -57,6 +62,42 @@ public class S3ServiceImpl implements S3Service {
 
         s3.putObject(request, RequestBody.empty());
         System.out.println("Created folder: " + folderName);
+    }
+
+    @Override
+    public void deleteBucket(String bucketName) {
+        DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder()
+                .bucket(bucketName)
+                .build();
+
+        // Delete all objects in the bucket
+        deleteAllObjects(bucketName);
+
+        s3.deleteBucket(deleteBucketRequest);
+        s3.waiter().waitUntilBucketNotExists(HeadBucketRequest.builder()
+                .bucket(bucketName).build());
+        System.out.println("Bucket deleted: " + bucketName);
+    }
+
+    private void deleteAllObjects(String bucketName) {
+        ListObjectsV2Request listReq = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectsV2Response listRes;
+        do {
+            listRes = s3.listObjectsV2(listReq);
+
+            for (S3Object s3Object : listRes.contents()) {
+                DeleteObjectRequest deleteReq = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(s3Object.key())
+                        .build();
+                s3.deleteObject(deleteReq);
+            }
+
+            listReq = listReq.toBuilder().continuationToken(listRes.nextContinuationToken()).build();
+        } while (listRes.isTruncated());
     }
 
     @Override
