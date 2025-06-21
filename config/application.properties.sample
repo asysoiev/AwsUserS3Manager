@@ -1,0 +1,8 @@
+######################################################################################
+# Sample of application properties config file.
+# Rename it to applicaiton.properties.
+# Define property values.
+######################################################################################
+
+## IAM profile name
+#iam.profile=
