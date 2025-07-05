@@ -1,6 +1,9 @@
 package com.sandbox;
 
+import com.sandbox.commands.kinesis.stream.CreateKinesisStreamCommand;
+import com.sandbox.commands.kinesis.stream.DeleteKinesisStreamCommand;
 import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand;
+import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamKPLCommand;
 import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamCommand;
 import com.sandbox.commands.s3.CreateS3BucketCommand;
 import com.sandbox.commands.s3.DeleteS3BucketCommand;
@@ -28,8 +31,11 @@ public class AwsSdkSandbox implements Runnable {
         CommandLine commandLine = new CommandLine(new AwsSdkSandbox())
                 .addSubcommand(new CreateS3BucketCommand(props))
                 .addSubcommand(new DeleteS3BucketCommand(props))
+                .addSubcommand(new CreateKinesisStreamCommand(props))
+                .addSubcommand(new DeleteKinesisStreamCommand(props))
                 .addSubcommand(new PutRecordsToKinesisStreamCommand(props))
-                .addSubcommand(new SubscribeToKinesisStreamCommand(props));
+                .addSubcommand(new SubscribeToKinesisStreamCommand(props))
+                .addSubcommand(new PutRecordsToKinesisStreamKPLCommand(props));
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }

@@ -1,18 +1,14 @@
 ## Java sandbox for AWS services
 
-### Logic
-
-- Connects to AWS by profile from ~/.aws/credentials
-- Assumes IAM role
-- Creates "aws-users-*" S3 bucket in the us-east-1 region
-- Creates User/Public folder in the bucket
-- Creates User/{user_name} folder for each AWS user in the bucket
-
 ### Technologies
 - AWS: S3, IAM, STS, Kinesis
 - Java 21
 - [Picocli](https://picocli.info/)
 - Gradle
+
+### IDEA Run configurations
+
+- Run Help to get list of commands
 
 ### TODO
 

@@ -10,10 +10,15 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    awsSdkVersion = "latest.release"
+}
+
 dependencies {
-    implementation 'software.amazon.awssdk:s3:2.25.2'
-    implementation 'software.amazon.awssdk:iam:2.25.2'
-    implementation 'software.amazon.awssdk:sts:2.25.2'
+    implementation "software.amazon.awssdk:s3:$awsSdkVersion"
+    implementation "software.amazon.awssdk:iam:$awsSdkVersion"
+    implementation "software.amazon.awssdk:sts:$awsSdkVersion"
+    implementation "software.amazon.awssdk:kinesis:$awsSdkVersion"
 
     implementation("info.picocli:picocli:4.7.7")
 }
