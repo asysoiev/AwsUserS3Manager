@@ -6,6 +6,10 @@
 - [Picocli](https://picocli.info/)
 - Gradle
 
+### Run configurations
+
+- Run `java -jar aws-sdk-sandbox.jar help` to get list of possible commands
+
 ### IDEA Run configurations
 
 - Run Help to get list of commands

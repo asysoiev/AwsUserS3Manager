@@ -1,21 +1,21 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="DeleteS3Bucket" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.sandbox.AwsSdkSandbox"/>
-    <module name="AwsUserS3Manager.main"/>
-    <option name="PROGRAM_PARAMETERS" value="deleteS3Bucket"/>
+    <option name="MAIN_CLASS_NAME" value="com.sandbox.AwsSdkSandbox" />
+    <module name="aws-sdk-sandbox.main" />
+    <option name="PROGRAM_PARAMETERS" value="deleteS3Bucket --deleteS3Bucket.bucketName=&quot;aws-users-9ad59c0f-a563-4f9c-85da-9ef16dcc85e7&quot;" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.sandbox.*"/>
-        <option name="ENABLED" value="true"/>
+        <option name="PATTERN" value="com.sandbox.*" />
+        <option name="ENABLED" value="true" />
       </pattern>
     </extension>
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
-      <option name="credential"/>
-      <option name="region"/>
-      <option name="useCurrentConnection" value="false"/>
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
     </extension>
     <method v="2">
-      <option name="Make" enabled="true"/>
+      <option name="Make" enabled="true" />
     </method>
   </configuration>
 </component>
