@@ -4,21 +4,41 @@ import picocli.CommandLine;
 
 import java.util.Properties;
 
+import static com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand.COMMAND_NAME;
+
 /**
  * Example of Kinesis Stream data producer implemented by AWS SDK
  * </br>
  * <a href="https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-sdk.html">Develop producers using the Amazon Kinesis Data Streams API with the AWS SDK for Java</a>
  */
-@CommandLine.Command(name = "putRecordsToKinesisStream", description = "Send data to Kinesis Stream by AWS SDK")
+@CommandLine.Command(name = COMMAND_NAME, description = "Send data to Kinesis Stream by AWS SDK")
 public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand {
+
+
+    public static final String COMMAND_NAME = "putRecordsToKinesisStream";
+    private static final String RECORDS_COUNT_PROP = COMMAND_NAME + ".recordsCount";
+    @CommandLine.Option(names = "--" + RECORDS_COUNT_PROP, description = "Number of records to put.")
+    protected int recordsCount;
 
     public PutRecordsToKinesisStreamCommand(Properties props) {
         super(props);
     }
 
     @Override
+    protected void mergeFieldsWithProperties(Properties props) {
+        if (recordsCount == 0) {
+            recordsCount = (int) props.getOrDefault(RECORDS_COUNT_PROP, 10);
+        }
+    }
+
+    @Override
     protected void executeKinesisCommand() {
         System.out.println("Sending data to Kinesis Stream");
-
+        //stoped at https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream
+        if (recordsCount <= 10) {
+            //put record
+        } else {
+            //put records
+        }
     }
 }
