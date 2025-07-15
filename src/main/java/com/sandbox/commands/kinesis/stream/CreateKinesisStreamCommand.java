@@ -2,6 +2,7 @@ package com.sandbox.commands.kinesis.stream;
 
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.kinesis.model.DecreaseStreamRetentionPeriodRequest;
 
 import java.util.Properties;
 
@@ -38,5 +39,14 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
                 .build();
         kinesisClient.createStream(streamReq);
         System.out.printf("The Kinesis Stream: %s was created%n", streamName);
+
+        //https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html
+        int retentionPeriod = 24;
+        DecreaseStreamRetentionPeriodRequest decreaseStreamRetentionPeriodRequest =
+                DecreaseStreamRetentionPeriodRequest.builder()
+                        .retentionPeriodHours(retentionPeriod)
+                        .build();
+        kinesisClient.decreaseStreamRetentionPeriod(decreaseStreamRetentionPeriodRequest);
+        System.out.printf("Retention period was decreased to %d(hrs)%n", retentionPeriod);
     }
 }
