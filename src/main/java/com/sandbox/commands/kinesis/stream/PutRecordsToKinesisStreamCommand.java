@@ -2,11 +2,12 @@ package com.sandbox.commands.kinesis.stream;
 
 import picocli.CommandLine;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 import software.amazon.awssdk.services.kinesis.model.PutRecordsRequest;
 import software.amazon.awssdk.services.kinesis.model.PutRecordsRequestEntry;
 import software.amazon.awssdk.services.kinesis.model.PutRecordsResponse;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -42,16 +43,29 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
     @Override
     protected void executeKinesisCommand() {
         System.out.println("Sending data to Kinesis Stream");
-        //stoped at https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-sdk.html#kinesis-using-sdk-java-add-data-to-stream
         if (recordsCount <= 10) {
             //put record
+            String sequenceNumberOfPreviousRecord = null;
+            for (int j = 0; j < recordsCount; j++) {
+                PutRecordRequest putRecordRequest = PutRecordRequest.builder()
+                        .streamName(streamName)
+                        .data(SdkBytes.fromUtf8String(String.valueOf(j)))
+                        .partitionKey(String.format("partitionKey-%d", j / 5))
+                        .sequenceNumberForOrdering(sequenceNumberOfPreviousRecord)
+                        .build();
+                PutRecordResponse putRecordResponse = kinesisClient.putRecord(putRecordRequest);
+                sequenceNumberOfPreviousRecord = putRecordResponse.sequenceNumber();
+                System.out.println("Put record result: ");
+                System.out.println("sequenceNumber: " + sequenceNumberOfPreviousRecord);
+                System.out.println("shardId: " + putRecordResponse.shardId());
+            }
         } else {
             //put records
             List<PutRecordsRequestEntry> putRecordsRequestEntryList = new ArrayList<>();
             for (int i = 0; i < recordsCount; i++) {
                 PutRecordsRequestEntry putRecordsRequestEntry = PutRecordsRequestEntry
                         .builder()
-                        .data(SdkBytes.fromString(String.valueOf(i), Charset.defaultCharset()))
+                        .data(SdkBytes.fromUtf8String(String.valueOf(i)))
                         .partitionKey(String.format("partitionKey-%d", i))
                         .build();
                 putRecordsRequestEntryList.add(putRecordsRequestEntry);
