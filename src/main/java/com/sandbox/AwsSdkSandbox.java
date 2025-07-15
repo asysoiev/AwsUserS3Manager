@@ -5,6 +5,7 @@ import com.sandbox.commands.kinesis.stream.DeleteKinesisStreamCommand;
 import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand;
 import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamKPLCommand;
 import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamCommand;
+import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamKCLCommand;
 import com.sandbox.commands.s3.CreateS3BucketCommand;
 import com.sandbox.commands.s3.DeleteS3BucketCommand;
 import picocli.CommandLine;
@@ -35,7 +36,8 @@ public class AwsSdkSandbox implements Runnable {
                 .addSubcommand(new DeleteKinesisStreamCommand(props))
                 .addSubcommand(new PutRecordsToKinesisStreamCommand(props))
                 .addSubcommand(new SubscribeToKinesisStreamCommand(props))
-                .addSubcommand(new PutRecordsToKinesisStreamKPLCommand(props));
+                .addSubcommand(new PutRecordsToKinesisStreamKPLCommand(props))
+                .addSubcommand(new SubscribeToKinesisStreamKCLCommand(props));
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }
