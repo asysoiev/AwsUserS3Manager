@@ -1,10 +1,13 @@
 package com.sandbox.commands.kinesis.stream;
 
 import picocli.CommandLine;
+import software.amazon.awssdk.services.kinesis.model.GetRecordsRequest;
+import software.amazon.awssdk.services.kinesis.model.GetRecordsResponse;
 import software.amazon.awssdk.services.kinesis.model.GetShardIteratorRequest;
 import software.amazon.awssdk.services.kinesis.model.GetShardIteratorResponse;
 import software.amazon.awssdk.services.kinesis.model.ListShardsRequest;
 import software.amazon.awssdk.services.kinesis.model.ListShardsResponse;
+import software.amazon.awssdk.services.kinesis.model.Record;
 import software.amazon.awssdk.services.kinesis.model.Shard;
 import software.amazon.awssdk.services.kinesis.model.ShardIteratorType;
 
@@ -35,11 +38,33 @@ public class SubscribeToKinesisStreamCommand extends AbstractKinesisSDKCommand {
                         .builder()
                         .streamName(streamName)
                         .streamName(shard.shardId())
-                        .shardIteratorType(ShardIteratorType.TRIM_HORIZON)
+                        .shardIteratorType(ShardIteratorType.LATEST)
                         .build();
 
                 GetShardIteratorResponse shardIteratorResponse = kinesisClient.getShardIterator(getShardIteratorRequest);
                 shardIterator = shardIteratorResponse.shardIterator();
+                System.out.println("Get records from shard iterator: " + shardIterator);
+                while (shardIterator != null) {
+                    GetRecordsRequest getRecordsRequest = GetRecordsRequest
+                            .builder()
+                            .shardIterator(shardIterator)
+                            .limit(25)
+                            .build();
+
+                    GetRecordsResponse getRecordsResult = kinesisClient.getRecords(getRecordsRequest);
+                    List<Record> records = getRecordsResult.records();
+                    System.out.println("Retrieved records: " + records.size());
+                    records.forEach(record -> {
+                        System.out.printf("Record seq: \"%s\", partitionKey: \"%s\", data: \"%s\"" +
+                                "%n", record.sequenceNumber(), record.partitionKey(), record.data().asUtf8String());
+                    });
+                    shardIterator = getRecordsResult.nextShardIterator();
+                }
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             });
         }
     }
