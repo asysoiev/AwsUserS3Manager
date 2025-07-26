@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand.COMMAND_NAME;
+import static com.sandbox.utils.PropertyUtils.getIntValue;
 import static software.amazon.awssdk.utils.StringUtils.isEmpty;
 
 /**
@@ -34,9 +35,9 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
     }
 
     @Override
-    protected void mergeFieldsWithProperties(Properties props) {
+    protected void mergeKinesisCommandProperties(Properties props) {
         if (recordsCount == 0) {
-            recordsCount = (int) props.getOrDefault(RECORDS_COUNT_PROP, 10);
+            recordsCount = getIntValue(props, RECORDS_COUNT_PROP, 10);
         }
     }
 

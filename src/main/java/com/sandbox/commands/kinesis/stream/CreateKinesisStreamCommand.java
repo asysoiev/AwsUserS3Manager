@@ -2,9 +2,12 @@ package com.sandbox.commands.kinesis.stream;
 
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
 import software.amazon.awssdk.services.kinesis.model.DecreaseStreamRetentionPeriodRequest;
 
 import java.util.Properties;
+
+import static com.sandbox.utils.PropertyUtils.getIntValue;
 
 /**
  * Creates Kinesis Stream
@@ -24,26 +27,31 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
     }
 
     @Override
-    protected void mergeFieldsWithProperties(Properties props) {
+    protected void mergeKinesisCommandProperties(Properties props) {
         if (shardsCount == 0) {
-            shardsCount = (int) props.getOrDefault(SHARDS_COUNT_PROP, 1);
+            shardsCount = getIntValue(props, SHARDS_COUNT_PROP, 1);
         }
     }
 
     @Override
     protected void executeKinesisCommand() {
         System.out.printf("Creating Kinesis Stream: %s%n", streamName);
+        if (shardsCount <= 0) {
+            System.out.printf("Shards count: %d must be greater than 0%n", shardsCount);
+            return;
+        }
         CreateStreamRequest streamReq = CreateStreamRequest.builder()
                 .streamName(streamName)
                 .shardCount(shardsCount)
                 .build();
-        kinesisClient.createStream(streamReq);
+        CreateStreamResponse createStreamResponse = kinesisClient.createStream(streamReq);
         System.out.printf("The Kinesis Stream: %s was created%n", streamName);
 
         //https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html
         int retentionPeriod = 24;
         DecreaseStreamRetentionPeriodRequest decreaseStreamRetentionPeriodRequest =
                 DecreaseStreamRetentionPeriodRequest.builder()
+                        .streamName(streamName)
                         .retentionPeriodHours(retentionPeriod)
                         .build();
         kinesisClient.decreaseStreamRetentionPeriod(decreaseStreamRetentionPeriodRequest);

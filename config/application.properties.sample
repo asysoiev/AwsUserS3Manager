@@ -6,3 +6,6 @@
 
 ## IAM profile name
 #iam.profile=
+## CreateKinesisStreamCommand
+kinesis.streamName=SandboxJavaSDK
+createKinesisStream.shardsCount=1
