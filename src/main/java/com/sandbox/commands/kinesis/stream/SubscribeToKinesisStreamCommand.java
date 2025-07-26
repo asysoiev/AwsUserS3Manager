@@ -37,7 +37,7 @@ public class SubscribeToKinesisStreamCommand extends AbstractKinesisSDKCommand {
                 GetShardIteratorRequest getShardIteratorRequest = GetShardIteratorRequest
                         .builder()
                         .streamName(streamName)
-                        .streamName(shard.shardId())
+                        .shardId(shard.shardId())
                         .shardIteratorType(ShardIteratorType.LATEST)
                         .build();
 
