@@ -48,10 +48,12 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
             //put record
             String sequenceNumberOfPreviousRecord = null;
             for (int j = 0; j < recordsCount; j++) {
+                SdkBytes data = SdkBytes.fromUtf8String(String.valueOf(j));
+                String partitionKey = String.format("partitionKey-%d", j / 5);
                 PutRecordRequest putRecordRequest = PutRecordRequest.builder()
                         .streamName(streamName)
-                        .data(SdkBytes.fromUtf8String(String.valueOf(j)))
-                        .partitionKey(String.format("partitionKey-%d", j / 5))
+                        .data(data)
+                        .partitionKey(partitionKey)
                         .sequenceNumberForOrdering(sequenceNumberOfPreviousRecord)
                         .build();
                 PutRecordResponse putRecordResponse = kinesisClient.putRecord(putRecordRequest);
