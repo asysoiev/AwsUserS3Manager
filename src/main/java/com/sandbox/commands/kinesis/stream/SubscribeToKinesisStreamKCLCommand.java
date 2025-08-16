@@ -22,5 +22,6 @@ public class SubscribeToKinesisStreamKCLCommand extends BaseCommand {
     @Override
     protected void executeCommand() {
         System.out.println("Receiving data from Kinesis Stream");
+        //Continue from https://docs.aws.amazon.com/streams/latest/dev/shared-throughput-kcl-consumers.html#shared-throughput-kcl-consumers-leasetable
     }
 }
