@@ -1,5 +1,7 @@
 package com.sandbox.commands.kinesis.stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
@@ -24,6 +26,7 @@ import static software.amazon.awssdk.utils.StringUtils.isEmpty;
 @CommandLine.Command(name = COMMAND_NAME, description = "Send data to Kinesis Stream by AWS SDK")
 public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
+    public static final Logger logger = LoggerFactory.getLogger(PutRecordsToKinesisStreamCommand.class);
 
     public static final String COMMAND_NAME = "putRecordsToKinesisStream";
     private static final String RECORDS_COUNT_PROP = COMMAND_NAME + ".recordsCount";
@@ -43,7 +46,7 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
 
     @Override
     protected void executeKinesisCommand() {
-        System.out.println("Sending data to Kinesis Stream");
+        logger.info("Sending data to Kinesis Stream");
         if (recordsCount <= 10) {
             //put record
             String sequenceNumberOfPreviousRecord = null;
@@ -58,9 +61,9 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
                         .build();
                 PutRecordResponse putRecordResponse = kinesisClient.putRecord(putRecordRequest);
                 sequenceNumberOfPreviousRecord = putRecordResponse.sequenceNumber();
-                System.out.println("Put record result: ");
-                System.out.println("sequenceNumber: " + sequenceNumberOfPreviousRecord);
-                System.out.println("shardId: " + putRecordResponse.shardId());
+                logger.info("Put record result: ");
+                logger.info("sequenceNumber: {}", sequenceNumberOfPreviousRecord);
+                logger.info("shardId: {}", putRecordResponse.shardId());
             }
         } else {
             //put records
@@ -80,22 +83,22 @@ public class PutRecordsToKinesisStreamCommand extends AbstractKinesisSDKCommand 
 
             PutRecordsResponse putRecordsResponse = kinesisClient.putRecords(putRecordsRequest);
             int resultCount = putRecordsResponse.records().size();
-            System.out.println("Put records count: " + resultCount);
-            System.out.println("Failed: " + putRecordsResponse.failedRecordCount());
+            logger.info("Put records count: {}", resultCount);
+            logger.info("Failed: {}", putRecordsResponse.failedRecordCount());
             if (putRecordsResponse.failedRecordCount() != resultCount) {
-                System.out.println("Successful records: ");
+                logger.info("Successful records: ");
                 putRecordsResponse.records().stream()
                         .filter(r -> !isEmpty(r.sequenceNumber())).
                         forEach(record -> {
-                            System.out.printf("Record #:%s Shard: %s%n", record.sequenceNumber(), record.shardId());
+                            logger.info("Record #:{} Shard: {}", record.sequenceNumber(), record.shardId());
                         });
             }
             if (putRecordsResponse.failedRecordCount() > 0) {
-                System.out.println("Failed records: ");
+                logger.info("Failed records: ");
                 putRecordsResponse.records().stream()
                         .filter(r -> isEmpty(r.sequenceNumber())).
                         forEach(record -> {
-                            System.out.printf("Error code:%s%n", record.errorCode());
+                            logger.info("Error code:{}", record.errorCode());
                         });
             }
         }

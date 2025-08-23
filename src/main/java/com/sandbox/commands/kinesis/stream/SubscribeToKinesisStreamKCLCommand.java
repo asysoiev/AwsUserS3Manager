@@ -38,7 +38,7 @@ import java.util.UUID;
  */
 @CommandLine.Command(name = "subscribeToKinesisStreamKCL", description = "Receive data from Kinesis Stream by KCL")
 public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
-    private static final Logger log = LoggerFactory.getLogger(SubscribeToKinesisStreamKCLCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubscribeToKinesisStreamKCLCommand.class);
 
     public SubscribeToKinesisStreamKCLCommand(Properties props) {
         super(props);
@@ -46,7 +46,7 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
 
     @Override
     protected void executeCommand() {
-        log.info("Receiving data from Kinesis Stream");
+        logger.info("Receiving data from Kinesis Stream");
         SampleConsumer sampleConsumer = new SampleConsumer(streamName, baseAWSConfig.getRegion());
         sampleConsumer.run();
     }
@@ -118,7 +118,7 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
             shardId = initializationInput.shardId();
             MDC.put(SHARD_ID_MDC_KEY, shardId);
             try {
-                log.info("Initializing @ Sequence: {}", initializationInput.extendedSequenceNumber());
+                logger.info("Initializing @ Sequence: {}", initializationInput.extendedSequenceNumber());
             } finally {
                 MDC.remove(SHARD_ID_MDC_KEY);
             }
@@ -128,15 +128,15 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
         public void processRecords(ProcessRecordsInput processRecordsInput) {
             MDC.put(SHARD_ID_MDC_KEY, shardId);
             try {
-                log.info("Processing {} record(s)", processRecordsInput.records().size());
+                logger.info("Processing {} record(s)", processRecordsInput.records().size());
                 processRecordsInput.records().forEach(r ->
-                        log.info("Processing record pk: {} -- Seq: {}", r.partitionKey(), r.sequenceNumber())
+                        logger.info("Processing record pk: {} -- Seq: {}", r.partitionKey(), r.sequenceNumber())
                 );
 
                 // Checkpoint periodically
                 processRecordsInput.checkpointer().checkpoint();
             } catch (Throwable t) {
-                log.error("Caught throwable while processing records. Aborting.", t);
+                logger.error("Caught throwable while processing records. Aborting.", t);
             } finally {
                 MDC.remove(SHARD_ID_MDC_KEY);
             }
@@ -146,7 +146,7 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
         public void leaseLost(LeaseLostInput leaseLostInput) {
             MDC.put(SHARD_ID_MDC_KEY, shardId);
             try {
-                log.info("Lost lease, so terminating.");
+                logger.info("Lost lease, so terminating.");
             } finally {
                 MDC.remove(SHARD_ID_MDC_KEY);
             }
@@ -156,10 +156,10 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
         public void shardEnded(ShardEndedInput shardEndedInput) {
             MDC.put(SHARD_ID_MDC_KEY, shardId);
             try {
-                log.info("Reached shard end checkpointing.");
+                logger.info("Reached shard end checkpointing.");
                 shardEndedInput.checkpointer().checkpoint();
             } catch (ShutdownException | InvalidStateException e) {
-                log.error("Exception while checkpointing at shard end. Giving up.", e);
+                logger.error("Exception while checkpointing at shard end. Giving up.", e);
             } finally {
                 MDC.remove(SHARD_ID_MDC_KEY);
             }
@@ -169,10 +169,10 @@ public class SubscribeToKinesisStreamKCLCommand extends AbstractKinesisCommand {
         public void shutdownRequested(ShutdownRequestedInput shutdownRequestedInput) {
             MDC.put(SHARD_ID_MDC_KEY, shardId);
             try {
-                log.info("Scheduler is shutting down, checkpointing.");
+                logger.info("Scheduler is shutting down, checkpointing.");
                 shutdownRequestedInput.checkpointer().checkpoint();
             } catch (ShutdownException | InvalidStateException e) {
-                log.error("Exception while checkpointing at requested shutdown. Giving up.", e);
+                logger.error("Exception while checkpointing at requested shutdown. Giving up.", e);
             } finally {
                 MDC.remove(SHARD_ID_MDC_KEY);
             }

@@ -1,5 +1,6 @@
 .gradle
 .idea
+*.log
 
 build/
 !gradle/wrapper/gradle-wrapper.jar

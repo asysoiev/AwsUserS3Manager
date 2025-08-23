@@ -1,0 +1,33 @@
+<configuration>
+  <property name="LOG_FILE" value="${LOG_FILE:-}"/>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <if condition='isDefined("LOG_FILE")'>
+    <then>
+      <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/${LOG_FILE}.log</file>
+        <append>false</append>
+        <encoder>
+          <pattern>%d [%t] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+      </appender>
+    </then>
+  </if>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+  <if condition='isDefined("LOG_FILE")'>
+    <then>
+      <root>
+        <appender-ref ref="FILE"/>
+      </root>
+    </then>
+  </if>
+</configuration>

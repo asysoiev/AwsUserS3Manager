@@ -1,5 +1,7 @@
 package com.sandbox.commands.kinesis.stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.DeleteStreamRequest;
 
@@ -13,6 +15,8 @@ import java.util.Properties;
 @CommandLine.Command(name = DeleteKinesisStreamCommand.COMMAND, description = "Deletes Kinesis Stream")
 public class DeleteKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
+    public static final Logger logger = LoggerFactory.getLogger(DeleteKinesisStreamCommand.class);
+
     public static final String COMMAND = "deleteKinesisStream";
 
     public DeleteKinesisStreamCommand(Properties props) {
@@ -21,11 +25,11 @@ public class DeleteKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
     @Override
     protected void executeKinesisCommand() {
-        System.out.printf("Deleting Kinesis Stream: %s%n", streamName);
+        logger.info("Deleting Kinesis Stream: {}", streamName);
         DeleteStreamRequest deleteStreamRequest = DeleteStreamRequest.builder()
                 .streamName(streamName)
                 .build();
         kinesisClient.deleteStream(deleteStreamRequest);
-        System.out.printf("The Kinesis Stream: %s was deleted %n", streamName);
+        logger.info("The Kinesis Stream: {} was deleted", streamName);
     }
 }

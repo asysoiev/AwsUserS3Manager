@@ -1,15 +1,17 @@
 package com.sandbox.config;
 
 import com.sandbox.config.converters.StringToAWSRegion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Option;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.StringUtils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 public class BaseAWSConfig {
+
+    public static final Logger logger = LoggerFactory.getLogger(BaseAWSConfig.class);
 
     @Option(names = "--iam.profile", description = "IAM profile")
     private String iamProfile;
@@ -43,12 +45,10 @@ public class BaseAWSConfig {
         }
 
         if (iamRoleArn == null || iamRoleArn.isEmpty()) {
-            System.out.printf("\"roleArn\" property is not defined. Profile \"%s\" credentials will be used\n",
-                    iamProfile);
+            logger.info("\"roleArn\" property is not defined. Profile \"{}\" credentials will be used", iamProfile);
         }
 
-        System.out.printf("Using profile: %s, region: %s, role: \"%s\"%n",
-                iamProfile, region.id(), iamRoleArn);
+        logger.info("Using profile: {}, region: {}, role: \"{}\"", iamProfile, region.id(), iamRoleArn);
     }
 
 }

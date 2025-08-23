@@ -19,20 +19,16 @@
 1. SubscribeToKinesisStreamCommand does not get records published by Put2RecordsToKinesisStream
    The published records can be retrieved only by AT_SEQUENCE_NUMBER, AFTER_SEQUENCE_NUMBER shard iterators
 2. Implement PutRecordsToKinesisStreamKPLCommand, SubscribeToKinesisStreamKCLCommand
-3. Use logger instead of
-   1. System.out.println 
-   2. e.printStackTrace(); 
-   3. fix SLF4J warning
-4. Upload some files to the S3 bucket.
+3. Upload some files to the S3 bucket.
    Try using multipart upload API.
-5. Play with prefixes and keys in S3.
+4. Play with prefixes and keys in S3.
    Get list of files by prefix, full key, etc.
-6. Delete all S3 bucket from ALL regions
-7. Configure S3 resource based access policies.
+5. Delete all S3 bucket from ALL regions
+6. Configure S3 resource based access policies.
    User can do anything only in hist folder.
-8. Add validation of S3 bucket name
+7. Add validation of S3 bucket name
    Must NOT start with the prefix xn--
    Must NOT end with the suffix -s3alias
-9. Create folder each group of user
-10. Create access points for group of
+8. Create folder each group of user
+9. Create access points for group of
    users https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-access-points.html

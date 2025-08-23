@@ -1,5 +1,7 @@
 package com.sandbox.s3;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
@@ -18,6 +20,8 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import java.util.UUID;
 
 public class S3ServiceImpl implements S3Service {
+
+    public static final Logger logger = LoggerFactory.getLogger(S3ServiceImpl.class);
 
     private final S3Client s3;
 
@@ -46,7 +50,7 @@ public class S3ServiceImpl implements S3Service {
             s3.waiter().waitUntilBucketExists(HeadBucketRequest.builder()
                     .bucket(bucketName).build());
 
-            System.out.println("Bucket created: " + bucketName);
+            logger.info("Bucket created: {}", bucketName);
             return bucketName;
         } catch (BucketAlreadyExistsException e) {
             throw new RuntimeException("Bucket name is already taken. Please choose a different name.");
@@ -61,7 +65,7 @@ public class S3ServiceImpl implements S3Service {
                 .build();
 
         s3.putObject(request, RequestBody.empty());
-        System.out.println("Created folder: " + folderName);
+        logger.info("Created folder: {}", folderName);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class S3ServiceImpl implements S3Service {
         s3.deleteBucket(deleteBucketRequest);
         s3.waiter().waitUntilBucketNotExists(HeadBucketRequest.builder()
                 .bucket(bucketName).build());
-        System.out.println("Bucket deleted: " + bucketName);
+        logger.info("Bucket deleted: {}", bucketName);
     }
 
     private void deleteAllObjects(String bucketName) {

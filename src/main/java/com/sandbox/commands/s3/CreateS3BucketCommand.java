@@ -6,6 +6,8 @@ import com.sandbox.iam.IamService;
 import com.sandbox.iam.IamServiceImpl;
 import com.sandbox.s3.S3Service;
 import com.sandbox.s3.S3ServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -20,6 +22,8 @@ import static com.sandbox.sts.StsAssumeRoleWrapper.assumeRoleWrapperBuilder;
 @Command(name = CreateS3BucketCommand.COMMAND_NAME, description = "Create S3 bucket")
 public class CreateS3BucketCommand extends BaseCommand {
 
+    public static final Logger logger = LoggerFactory.getLogger(CreateS3BucketCommand.class);
+
     public static final String COMMAND_NAME = "createS3Bucket";
     public static final String REGION = COMMAND_NAME + ".region";
 
@@ -33,7 +37,7 @@ public class CreateS3BucketCommand extends BaseCommand {
 
     @Override
     public void executeCommand() {
-        System.out.println("Creating S3 Bucket");
+        logger.info("Creating S3 Bucket");
 
         String baseProfile = baseAWSConfig.getIamProfile();
         String roleArn = baseAWSConfig.getIamRoleArn();
@@ -51,9 +55,9 @@ public class CreateS3BucketCommand extends BaseCommand {
                 s3Service.createFolder(bucket, userFolderName);
             }
 
-            System.out.println("All operations completed successfully.");
+            logger.info("All operations completed successfully.");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to Create S3 Bucket", e);
         }
     }
 

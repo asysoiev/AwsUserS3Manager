@@ -1,5 +1,7 @@
 package com.sandbox.commands.kinesis.stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.GetRecordsRequest;
 import software.amazon.awssdk.services.kinesis.model.GetRecordsResponse;
@@ -22,15 +24,17 @@ import java.util.Properties;
 @CommandLine.Command(name = "subscribeToKinesisStream", description = "Receive data from Kinesis Stream")
 public class SubscribeToKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
+    public static final Logger logger = LoggerFactory.getLogger(SubscribeToKinesisStreamCommand.class);
+
     public SubscribeToKinesisStreamCommand(Properties props) {
         super(props);
     }
 
     @Override
     protected void executeKinesisCommand() {
-        System.out.println("Receiving data from Kinesis Stream");
+        logger.info("Receiving data from Kinesis Stream");
         List<Shard> shards = getShards();
-        System.out.println("Number of shards: " + shards.size());
+        logger.info("Number of shards: {}", shards.size());
         while (true) {
             shards.forEach(shard -> {
                 String shardIterator;
@@ -38,12 +42,12 @@ public class SubscribeToKinesisStreamCommand extends AbstractKinesisSDKCommand {
                         .builder()
                         .streamName(streamName)
                         .shardId(shard.shardId())
-                        .shardIteratorType(ShardIteratorType.LATEST)
+                        .shardIteratorType(ShardIteratorType.TRIM_HORIZON)
                         .build();
 
                 GetShardIteratorResponse shardIteratorResponse = kinesisClient.getShardIterator(getShardIteratorRequest);
                 shardIterator = shardIteratorResponse.shardIterator();
-                System.out.println("Get records from shard iterator: " + shardIterator);
+                logger.info("Get records from shard iterator: {}", shardIterator);
                 while (shardIterator != null) {
                     GetRecordsRequest getRecordsRequest = GetRecordsRequest
                             .builder()
@@ -53,10 +57,10 @@ public class SubscribeToKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
                     GetRecordsResponse getRecordsResult = kinesisClient.getRecords(getRecordsRequest);
                     List<Record> records = getRecordsResult.records();
-                    System.out.println("Retrieved records: " + records.size());
+                    logger.info("Retrieved records: {}", records.size());
                     records.forEach(record -> {
-                        System.out.printf("Record seq: \"%s\", partitionKey: \"%s\", data: \"%s\"" +
-                                "%n", record.sequenceNumber(), record.partitionKey(), record.data().asUtf8String());
+                        logger.info("Record seq: \"{}\", partitionKey: \"{}\", data: \"{}\"",
+                                record.sequenceNumber(), record.partitionKey(), record.data().asUtf8String());
                     });
                     shardIterator = getRecordsResult.nextShardIterator();
                 }

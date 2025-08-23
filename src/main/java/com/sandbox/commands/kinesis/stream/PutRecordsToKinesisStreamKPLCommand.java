@@ -3,6 +3,8 @@ package com.sandbox.commands.kinesis.stream;
 import com.amazonaws.services.kinesis.producer.Attempt;
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.UserRecordResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.core.SdkBytes;
 
@@ -26,6 +28,8 @@ import static com.sandbox.utils.PropertyUtils.getIntValue;
 @CommandLine.Command(name = COMMAND_NAME, description = "Send data to Kinesis Stream by KPL")
 public class PutRecordsToKinesisStreamKPLCommand extends AbstractKinesisCommand {
 
+    public static final Logger logger = LoggerFactory.getLogger(PutRecordsToKinesisStreamKPLCommand.class);
+
     public static final String COMMAND_NAME = "putRecordsToKinesisStreamKPL";
     private static final String RECORDS_COUNT_PROP = COMMAND_NAME + ".recordsCount";
     @CommandLine.Option(names = "--" + RECORDS_COUNT_PROP, description = "Number of records to put.")
@@ -44,7 +48,7 @@ public class PutRecordsToKinesisStreamKPLCommand extends AbstractKinesisCommand 
 
     @Override
     protected void executeCommand() {
-        System.out.println("Sending data to Kinesis Stream");
+        logger.info("Sending data to Kinesis Stream");
         //https://docs.aws.amazon.com/streams/latest/dev/kinesis-kpl-writing.html
         // KinesisProducer gets credentials automatically like
         // DefaultAWSCredentialsProviderChain.
@@ -64,14 +68,13 @@ public class PutRecordsToKinesisStreamKPLCommand extends AbstractKinesisCommand 
             try {
                 result = f.get();
                 if (result.isSuccessful()) {
-                    System.out.println("Put record into shard " +
-                            result.getShardId());
+                    logger.info("Put record into shard {}", result.getShardId());
                 } else {
                     for (Attempt attempt : result.getAttempts()) {
                         // Analyze and respond to the failure
-                        System.out.printf("Failed, SequenceNumber:%s%n", result.getSequenceNumber());
-                        System.out.printf("Error code:%s%n", attempt.getErrorCode());
-                        System.out.printf("Error message:%s%n", attempt.getErrorMessage());
+                        logger.info("Failed, SequenceNumber:{}", result.getSequenceNumber());
+                        logger.info("Error code:{}", attempt.getErrorCode());
+                        logger.info("Error message:{}", attempt.getErrorMessage());
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {

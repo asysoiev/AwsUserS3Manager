@@ -1,5 +1,7 @@
 package com.sandbox.commands.kinesis.stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
@@ -16,6 +18,8 @@ import static com.sandbox.utils.PropertyUtils.getIntValue;
  */
 @CommandLine.Command(name = CreateKinesisStreamCommand.COMMAND_NAME, description = "Creates Kinesis Stream")
 public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
+
+    public static final Logger logger = LoggerFactory.getLogger(CreateKinesisStreamCommand.class);
 
     public static final String COMMAND_NAME = "createKinesisStream";
     private static final String SHARDS_COUNT_PROP = COMMAND_NAME + ".shardsCount";
@@ -35,9 +39,9 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
 
     @Override
     protected void executeKinesisCommand() {
-        System.out.printf("Creating Kinesis Stream: %s%n", streamName);
+        logger.info("Creating Kinesis Stream: {}", streamName);
         if (shardsCount <= 0) {
-            System.out.printf("Shards count: %d must be greater than 0%n", shardsCount);
+            logger.error("Shards count: {} must be greater than 0", shardsCount);
             return;
         }
         CreateStreamRequest streamReq = CreateStreamRequest.builder()
@@ -45,7 +49,7 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
                 .shardCount(shardsCount)
                 .build();
         CreateStreamResponse createStreamResponse = kinesisClient.createStream(streamReq);
-        System.out.printf("The Kinesis Stream: %s was created%n", streamName);
+        logger.info("The Kinesis Stream: {} was created", streamName);
 
         //https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html
         int retentionPeriod = 24;
@@ -55,6 +59,6 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
                         .retentionPeriodHours(retentionPeriod)
                         .build();
         kinesisClient.decreaseStreamRetentionPeriod(decreaseStreamRetentionPeriodRequest);
-        System.out.printf("Retention period was decreased to %d(hrs)%n", retentionPeriod);
+        logger.info("Retention period was decreased to {}(hrs)", retentionPeriod);
     }
 }
