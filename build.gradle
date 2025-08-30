@@ -38,6 +38,8 @@ dependencies {
 
     implementation "info.picocli:picocli:4.7.7"
 
+    implementation "io.github.resilience4j:resilience4j-retry:2.3.0"
+
     implementation loggingLibs
 }
 
