@@ -1,12 +1,18 @@
 package com.sandbox.commands.kinesis.stream;
 
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
 import software.amazon.awssdk.services.kinesis.model.DecreaseStreamRetentionPeriodRequest;
+import software.amazon.awssdk.services.kinesis.model.ResourceInUseException;
+import software.amazon.awssdk.services.kinesis.model.Shard;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.Properties;
 
 import static com.sandbox.utils.PropertyUtils.getIntValue;
@@ -52,13 +58,30 @@ public class CreateKinesisStreamCommand extends AbstractKinesisSDKCommand {
         logger.info("The Kinesis Stream: {} was created", streamName);
 
         //https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html
-        int retentionPeriod = 24;
-        DecreaseStreamRetentionPeriodRequest decreaseStreamRetentionPeriodRequest =
-                DecreaseStreamRetentionPeriodRequest.builder()
-                        .streamName(streamName)
-                        .retentionPeriodHours(retentionPeriod)
-                        .build();
-        kinesisClient.decreaseStreamRetentionPeriod(decreaseStreamRetentionPeriodRequest);
-        logger.info("Retention period was decreased to {}(hrs)", retentionPeriod);
+        RetryConfig config = RetryConfig.<List<Shard>>custom()
+                .maxAttempts(Integer.MAX_VALUE)
+                .waitDuration(Duration.ofSeconds(30))
+                .retryExceptions(ResourceInUseException.class)
+                .build();
+
+        Retry retry = Retry.of("extend-kinesis-stream-retention", config);
+        retry.getEventPublisher()
+                .onRetry(event -> logger.warn(
+                        "Retry attempt #{}, waiting {}ms. Cause: {}",
+                        event.getNumberOfRetryAttempts(),
+                        event.getWaitInterval().toMillis(),
+                        event.getLastThrowable() != null ? event.getLastThrowable().toString() : "n/a"));
+
+        Runnable runnable = Retry.decorateRunnable(retry, () -> {
+            int retentionPeriod = 24;
+            DecreaseStreamRetentionPeriodRequest decreaseStreamRetentionPeriodRequest =
+                    DecreaseStreamRetentionPeriodRequest.builder()
+                            .streamName(streamName)
+                            .retentionPeriodHours(retentionPeriod)
+                            .build();
+            kinesisClient.decreaseStreamRetentionPeriod(decreaseStreamRetentionPeriodRequest);
+            logger.info("Retention period was decreased to {}(hrs)", retentionPeriod);
+        });
+        runnable.run();
     }
 }
