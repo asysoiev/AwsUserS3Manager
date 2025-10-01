@@ -6,6 +6,7 @@ import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamCommand;
 import com.sandbox.commands.kinesis.stream.PutRecordsToKinesisStreamKPLCommand;
 import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamCommand;
 import com.sandbox.commands.kinesis.stream.SubscribeToKinesisStreamKCLCommand;
+import com.sandbox.commands.polly.PollyDemoCommand;
 import com.sandbox.commands.s3.CreateS3BucketCommand;
 import com.sandbox.commands.s3.DeleteS3BucketCommand;
 import org.slf4j.Logger;
@@ -47,7 +48,8 @@ public class AwsSdkSandbox implements Runnable {
                 .addSubcommand(new PutRecordsToKinesisStreamCommand(props))
                 .addSubcommand(new SubscribeToKinesisStreamCommand(props))
                 .addSubcommand(new PutRecordsToKinesisStreamKPLCommand(props))
-                .addSubcommand(new SubscribeToKinesisStreamKCLCommand(props));
+                .addSubcommand(new SubscribeToKinesisStreamKCLCommand(props))
+                .addSubcommand(new PollyDemoCommand(props));
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }

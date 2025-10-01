@@ -1,7 +1,8 @@
 ## Java sandbox for AWS services
 
 ### Technologies
-- AWS: S3, IAM, STS, Kinesis
+
+- AWS: S3, IAM, STS, Kinesis, Polly, Translate
 - Java 21
 - [Picocli](https://picocli.info/)
 - Gradle

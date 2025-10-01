@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PollyDemo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.sandbox.AwsSdkSandbox"/>
+    <module name="aws-sdk-sandbox.main"/>
+    <option name="PROGRAM_PARAMETERS"
+            value="pollyDemo --pollyDemo.textToSpeech=&quot;Hello world!&quot; --pollyDemo.engine=neural"/>
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.sandbox.*"/>
+        <option name="ENABLED" value="true"/>
+      </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential"/>
+      <option name="region"/>
+      <option name="useCurrentConnection" value="false"/>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true"/>
+    </method>
+  </configuration>
+</component>
